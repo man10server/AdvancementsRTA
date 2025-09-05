@@ -3,7 +3,6 @@ package red.dan5.advancementsRTA
 import io.papermc.paper.advancement.AdvancementDisplay
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
-import org.bukkit.Registry
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
@@ -28,8 +27,8 @@ class AdvancementTracker(private val logger: Logger, private val plugin: JavaPlu
             // Restore from existing file
             restore()
         } else {
-            // Initialize from Registry
-            @Suppress("DEPRECATION") val advancements = Registry.ADVANCEMENT.stream()
+            // Initialize from Bukkit advancementIterator
+            val advancements = Bukkit.advancementIterator().asSequence()
                 .filter { advancement -> advancement.display?.doesAnnounceToChat() ?: false }
                 .toList()
             
@@ -46,8 +45,7 @@ class AdvancementTracker(private val logger: Logger, private val plugin: JavaPlu
         val frameGroups = mutableMapOf<AdvancementDisplay.Frame, Int>()
         
         firstPlayers.keys.forEach { key ->
-            @Suppress("DEPRECATION") 
-            val advancement = Registry.ADVANCEMENT.get(key)
+            val advancement = Bukkit.getAdvancement(key)
             
             if (advancement == null) {
                 logger.severe("ERROR: Advancement not found in registry: $key")
