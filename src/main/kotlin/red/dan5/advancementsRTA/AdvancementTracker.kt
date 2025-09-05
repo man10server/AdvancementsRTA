@@ -116,4 +116,33 @@ class AdvancementTracker(private val logger: Logger, private val plugin: JavaPlu
             logger.severe("Failed to load result.yaml: ${e.message}")
         }
     }
+    
+    /**
+     * Checks if the player is the first to achieve this advancement and records it if so.
+     * 
+     * @param advancement The advancement being granted
+     * @param player The player who achieved the advancement
+     * @return Optional<Boolean> with three possible states:
+     *         - Optional.of(true): Player is the FIRST to get this advancement (recorded and flushed)
+     *         - Optional.of(false): Someone else already has this advancement
+     *         - Optional.empty(): This advancement is not being tracked (e.g., recipe advancements)
+     */
+    fun grantAdvancementAndCheckIsFirst(advancement: org.bukkit.advancement.Advancement, player: org.bukkit.entity.Player): Optional<Boolean> {
+        val key = advancement.key
+        val playerUUID = player.uniqueId
+
+        val currentValue =
+            firstPlayers[key] ?: // This advancement is not tracked (likely a recipe or other excluded advancement)
+            return Optional.empty()
+
+        if (currentValue.isPresent) {
+            // Someone already has this advancement
+            return Optional.of(false)
+        }
+        
+        // This player is the first to achieve this advancement
+        firstPlayers[key] = Optional.of(playerUUID)
+        flush()
+        return Optional.of(true)
+    }
 }

@@ -18,13 +18,16 @@ class AdvancementsRTA : JavaPlugin() {
         advancementTracker.initialize()
         
         // Register advancement listener
-        advancementListener = AdvancementListener(logger)
+        advancementListener = AdvancementListener(logger, advancementTracker)
         server.pluginManager.registerEvents(advancementListener, this)
     }
 
     override fun onDisable() {
         // Plugin shutdown logic
-
+        
+        // Save advancement data
+        advancementTracker.flush()
+        
         gameRuleSetter.restore()
     }
 }
