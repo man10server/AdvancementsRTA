@@ -20,6 +20,12 @@ dependencies {
 }
 
 tasks {
+    shadowJar {
+        archiveClassifier.set("")
+        relocate("kotlin", "red.dan5.advancementsRTA.shaded.kotlin")
+        relocate("org.jetbrains", "red.dan5.advancementsRTA.shaded.jetbrains")
+    }
+    
     runServer {
         // Configure the Minecraft version for our task.
         // This is the only required configuration besides applying the plugin.
